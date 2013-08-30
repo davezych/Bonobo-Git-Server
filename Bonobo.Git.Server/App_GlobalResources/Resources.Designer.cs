@@ -826,7 +826,7 @@ namespace Bonobo.Git.Server.App_GlobalResources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Bonobo Git Server.
+        ///   Looks up a localized string similar to Code 70 Git Server.
         /// </summary>
         public static string Layout_Title {
             get {
