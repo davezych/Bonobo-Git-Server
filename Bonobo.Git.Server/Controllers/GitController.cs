@@ -1,4 +1,5 @@
 ﻿using Bonobo.Git.Server.Configuration;
+using Bonobo.Git.Server.Helpers;
 using Bonobo.Git.Server.Security;
 using Microsoft.Practices.Unity;
 using System;
@@ -67,13 +68,14 @@ namespace Bonobo.Git.Server.Controllers
         private ActionResult ExecuteReceivePack(string project)
         {
             Response.Charset = "";
-            Response.ContentType = "application/x-git-receive-pack-result";
+            Response.ContentType = GitRunner.GitCommand.Receive.ToContentTypeString();
             SetNoCache();
 
             var directory = GetDirectoryInfo(project);
             if (LibGit2Sharp.Repository.IsValid(directory.FullName))
             {
-                RunGitCmd("receive-pack", false, directory.FullName, GetInputStream(), Response.OutputStream);
+                var gitRunner = new GitRunner(GitRunner.GitCommand.Receive, directory.FullName, false);
+                gitRunner.RunGitCmd(GetInputStream(), Response.OutputStream);
                 return new EmptyResult();
             }
             else
@@ -85,13 +87,14 @@ namespace Bonobo.Git.Server.Controllers
         private ActionResult ExecuteUploadPack(string project)
         {
             Response.Charset = "";
-            Response.ContentType = "application/x-git-upload-pack-result";
+            Response.ContentType = GitRunner.GitCommand.UploadPack.ToContentTypeString();
             SetNoCache();
 
             var directory = GetDirectoryInfo(project);
             if (LibGit2Sharp.Repository.IsValid(directory.FullName))
             {
-                RunGitCmd("upload-pack", false, directory.FullName, GetInputStream(), Response.OutputStream);
+                var gitRunner = new GitRunner(GitRunner.GitCommand.UploadPack, directory.FullName, false);
+                gitRunner.RunGitCmd(GetInputStream(), Response.OutputStream);
                 return new EmptyResult();
             }
             else
@@ -114,7 +117,8 @@ namespace Bonobo.Git.Server.Controllers
 
             if (LibGit2Sharp.Repository.IsValid(directory.FullName))
             {
-                RunGitCmd(service.Substring(4), true, directory.FullName, GetInputStream(), Response.OutputStream);
+                var gitRunner = new GitRunner(service.Substring(4), directory.FullName, true);
+                gitRunner.RunGitCmd(GetInputStream(), Response.OutputStream);
                 return new EmptyResult();
             }
             else
@@ -159,36 +163,6 @@ namespace Bonobo.Git.Server.Controllers
             Response.AddHeader("Expires", "Fri, 01 Jan 1980 00:00:00 GMT");
             Response.AddHeader("Pragma", "no-cache");
             Response.AddHeader("Cache-Control", "no-cache, max-age=0, must-revalidate");
-        }
-
-        public void RunGitCmd(string serviceName, bool advertiseRefs, string workingDir, Stream inStream, Stream outStream)
-        {
-            var args = serviceName + " --stateless-rpc";
-            if (advertiseRefs)
-                args += " --advertise-refs";
-            args += " \"" + workingDir + "\"";
-
-            var gitPath = Path.IsPathRooted(ConfigurationManager.AppSettings["GitPath"]) 
-                ? ConfigurationManager.AppSettings["GitPath"] 
-                : System.Web.HttpContext.Current.Server.MapPath(ConfigurationManager.AppSettings["GitPath"]);
-            var info = new System.Diagnostics.ProcessStartInfo(gitPath, args)
-            {
-                CreateNoWindow = true,
-                RedirectStandardError = true,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                WorkingDirectory = Path.GetDirectoryName(UserConfiguration.Current.Repositories),
-            };
-
-            using (var process = System.Diagnostics.Process.Start(info))
-            {
-                inStream.CopyTo(process.StandardInput.BaseStream);
-                process.StandardInput.Write('\0');
-                process.StandardOutput.BaseStream.CopyTo(outStream);
-
-                process.WaitForExit();
-            }
         }
     }
 }
