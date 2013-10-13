@@ -197,6 +197,7 @@
     </Compile>
     <Compile Include="Data\Update\AutomaticUpdater.cs" />
     <Compile Include="Data\Update\UsernamesToLower.cs" />
+    <Compile Include="Email\CommitEmail.cs" />
     <Compile Include="GitAuthorizeAttribute.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Configuration\ConfigurationEntry.cs" />
@@ -228,6 +229,7 @@
     <Compile Include="FileActionResult.cs" />
     <Compile Include="FileNameAttribute.cs" />
     <Compile Include="Extensions\GitCommandExtensions.cs" />
+    <Compile Include="Email\EmailHelperBase.cs" />
     <Compile Include="Helpers\GitRunner.cs" />
     <Compile Include="WebAuthorizeAttribute.cs" />
     <Compile Include="Helpers\CustomHtmlHelpers.cs" />

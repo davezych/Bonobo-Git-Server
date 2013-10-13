@@ -1,14 +1,12 @@
 ﻿using Bonobo.Git.Server.Configuration;
+using Bonobo.Git.Server.Data;
+using Bonobo.Git.Server.Email;
 using Bonobo.Git.Server.Helpers;
 using Bonobo.Git.Server.Security;
 using Microsoft.Practices.Unity;
 using System;
-using System.Configuration;
 using System.IO;
 using System.IO.Compression;
-using System.Security.Principal;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
 using Bonobo.Git.Server.Extensions;
 
@@ -20,6 +18,11 @@ namespace Bonobo.Git.Server.Controllers
         [Dependency]
         public IRepositoryPermissionService RepositoryPermissionService { get; set; }
 
+        [Dependency]
+        public IRepositoryRepository RepositoryRepository { get; set; }
+
+        [Dependency]
+        public IMembershipService MembershipService { get; set; }
 
         public ActionResult SecureGetInfoRefs(String project, String service)
         {
@@ -76,6 +79,10 @@ namespace Bonobo.Git.Server.Controllers
             {
                 var gitRunner = new GitRunner(GitRunner.GitCommand.Receive, directory.FullName, false);
                 gitRunner.RunGitCmd(GetInputStream(), Response.OutputStream);
+                using (var ce = new CommitEmail(RepositoryRepository, MembershipService))
+                {
+                    ce.SendMailOnCommit(project);
+                }
                 return new EmptyResult();
             }
             else
