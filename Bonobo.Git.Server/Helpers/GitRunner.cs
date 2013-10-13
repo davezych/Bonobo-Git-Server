@@ -23,7 +23,7 @@ namespace Bonobo.Git.Server.Helpers
         public GitRunner(string command, string workingDirectory, bool advertiseRefs)
         {
             _unknownCommand = command;
-            _command = GitCommand.Unknown;
+            _command = GitCommand.Other;
             _workingDirectory = workingDirectory;
             _advertiseRefs = advertiseRefs;
         }
@@ -32,13 +32,13 @@ namespace Bonobo.Git.Server.Helpers
         {
             Receive,
             UploadPack,
-            Unknown,
+            Other,
         }
 
         public void RunGitCmd(Stream inStream, Stream outStream)
         {
             string commandToRun;
-            if (_command == GitCommand.Unknown)
+            if (_command == GitCommand.Other)
             {
                 commandToRun = _unknownCommand;
             }
