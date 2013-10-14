@@ -25,6 +25,7 @@ namespace Bonobo.Git.Server.Email
             foreach (var userName in allUsersInRepo)
             {
                 var user = MembershipService.GetUser(userName);
+                //Also check if user wants emails
                 if (!string.IsNullOrEmpty(user.Email))
                 {
                     MailMessageBase.To.Add(user.Email);
