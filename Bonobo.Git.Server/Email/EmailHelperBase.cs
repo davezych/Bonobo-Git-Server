@@ -12,13 +12,18 @@ namespace Bonobo.Git.Server.Email
         protected SmtpClient SmtpClient;
         protected MailMessage MailMessageBase;
 
+        private string _fromEmail
+        {
+            get { return System.Configuration.ConfigurationManager.AppSettings["FromEmail"]; }
+        }
+
         protected EmailHelperBase(IRepositoryRepository repositoryRepository, IMembershipService membershipService)
         {
             RepositoryRepository = repositoryRepository;
             MembershipService = membershipService;
             SmtpClient = new SmtpClient();
             MailMessageBase = new MailMessage();
-            MailMessageBase.From = new MailAddress("no-reply@test.test");
+            MailMessageBase.From = new MailAddress(_fromEmail);
         }
 
         protected void Send()
