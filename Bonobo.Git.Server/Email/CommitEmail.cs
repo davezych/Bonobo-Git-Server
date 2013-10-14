@@ -1,4 +1,5 @@
-﻿using Bonobo.Git.Server.Data;
+﻿using System.Linq;
+using Bonobo.Git.Server.Data;
 using Bonobo.Git.Server.Security;
 
 namespace Bonobo.Git.Server.Email
@@ -19,10 +20,15 @@ namespace Bonobo.Git.Server.Email
             MailMessageBase.Subject = "A new commit";
             MailMessageBase.Body = "body of commit email";
 
-            foreach (var userName in repository.Users)
+            var allUsersInRepo = repository.Users.Concat(repository.Administrators);
+
+            foreach (var userName in allUsersInRepo)
             {
                 var user = MembershipService.GetUser(userName);
-                MailMessageBase.To.Add(user.Email);
+                if (!string.IsNullOrEmpty(user.Email))
+                {
+                    MailMessageBase.To.Add(user.Email);
+                }
             }
 
             SmtpClient.Send(MailMessageBase);
