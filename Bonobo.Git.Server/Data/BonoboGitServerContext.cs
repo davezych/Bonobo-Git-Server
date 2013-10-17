@@ -13,7 +13,7 @@ namespace Bonobo.Git.Server.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<User> Users { get; set; }
-
+        public DbSet<UserRepositoryPermission> UserRepositoryPermissions { get; set; }
 
         static BonoboGitServerContext()
         {
@@ -32,6 +32,7 @@ namespace Bonobo.Git.Server.Data
             modelBuilder.Configurations.Add(new RoleMap());
             modelBuilder.Configurations.Add(new TeamMap());
             modelBuilder.Configurations.Add(new UserMap());
+            modelBuilder.Configurations.Add(new UserRepositoryPermissionMap());
         }
     }
 }

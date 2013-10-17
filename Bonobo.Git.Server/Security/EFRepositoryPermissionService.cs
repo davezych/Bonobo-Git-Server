@@ -19,7 +19,6 @@ namespace Bonobo.Git.Server.Security
                 if (user != null && project != null)
                 {
                     if (user.Roles.FirstOrDefault(i => i.Name == Definitions.Roles.Administrator) != null
-                     || user.Repositories.FirstOrDefault(i => i.Name == project) != null
                      || user.AdministratedRepositories.FirstOrDefault(i => i.Name == project) != null
                      || user.Teams.Select(i => i.Name).FirstOrDefault(t => repository.Teams.Select(i => i.Name).Contains(t)) != null)
                     {

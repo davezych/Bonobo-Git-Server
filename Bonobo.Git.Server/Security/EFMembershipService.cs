@@ -123,8 +123,8 @@ namespace Bonobo.Git.Server.Security
                 if (user != null)
                 {
                     user.AdministratedRepositories.Clear();
+                    // TODO: Update to remove repos
                     user.Roles.Clear();
-                    user.Repositories.Clear();
                     user.Teams.Clear();
                     database.Users.Remove(user);
                     database.SaveChanges();

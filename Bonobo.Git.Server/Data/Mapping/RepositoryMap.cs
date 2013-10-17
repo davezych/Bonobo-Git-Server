@@ -33,15 +33,6 @@ namespace Bonobo.Git.Server.Data.Mapping
                     m.MapLeftKey("Repository_Name");
                     m.MapRightKey("User_Username");
                 });
-
-            HasMany(t => t.Users)
-                .WithMany(t => t.Repositories)
-                .Map(m =>
-                {
-                    m.ToTable("UserRepository_Permission");
-                    m.MapLeftKey("Repository_Name");
-                    m.MapRightKey("User_Username");
-                });
         }
 
         private void SetTableAndColumnMappings()

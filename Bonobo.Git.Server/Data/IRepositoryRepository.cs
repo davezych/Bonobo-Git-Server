@@ -11,6 +11,7 @@ namespace Bonobo.Git.Server.Data
         IList<RepositoryModel> GetAllRepositories();
         IList<RepositoryModel> GetPermittedRepositories(string username, string[] userTeams);
         IList<RepositoryModel> GetAdministratedRepositories(string username);
+        IList<UserRepositoryPermission> GetUserRepositoriesForUser(string username);
         RepositoryModel GetRepository(string name);
         void Delete(string name);
         bool Create(RepositoryModel repository);

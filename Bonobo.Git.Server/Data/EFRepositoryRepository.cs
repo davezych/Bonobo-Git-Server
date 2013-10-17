@@ -62,7 +62,6 @@ namespace Bonobo.Git.Server.Data
                 if (repo != null)
                 {
                     repo.Administrators.Clear();
-                    repo.Users.Clear();
                     repo.Teams.Clear();
                     db.Repositories.Remove(repo);
                     db.SaveChanges();
@@ -111,7 +110,6 @@ namespace Bonobo.Git.Server.Data
                     repo.Description = model.Description;
                     repo.Anonymous = model.AnonymousAccess;
 
-                    repo.Users.Clear();
                     repo.Teams.Clear();
                     repo.Administrators.Clear();
 
@@ -131,7 +129,8 @@ namespace Bonobo.Git.Server.Data
                             Name = item.Name,
                             Description = item.Description,
                             AnonymousAccess = item.Anonymous,
-                            Users = item.Users.Select(i => i.Username).ToArray(),
+                            // TODO: Load all users
+                            Users = new string[0],
                             Teams = item.Teams.Select(i => i.Name).ToArray(),
                             Administrators = item.Administrators.Select(i => i.Username).ToArray(),
                         };
@@ -156,7 +155,8 @@ namespace Bonobo.Git.Server.Data
                 var permittedUsers = database.Users.Where(i => users.Contains(i.Username));
                 foreach (var item in permittedUsers)
                 {
-                    repo.Users.Add(item);
+                    // TODO: Add users
+                    //repo.Users.Add(item);
                 }
             }
 
@@ -170,5 +170,12 @@ namespace Bonobo.Git.Server.Data
             }
         }
 
+        public IList<UserRepositoryPermission> GetUserRepositoriesForUser(string username)
+        {
+            using (var db = new BonoboGitServerContext())
+            {
+                return db.UserRepositoryPermissions.Where(u => u.User_Username == username).ToList();
+            }
+        } 
     }
 }

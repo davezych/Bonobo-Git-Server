@@ -35,6 +35,7 @@ namespace Bonobo.Git.Server.Controllers
         [WebAuthorize]
         public ActionResult Index()
         {
+            var userrepos = RepositoryRepository.GetUserRepositoriesForUser("dzych");
             return View(GetIndexModel());
         }
 

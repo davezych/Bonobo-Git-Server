@@ -11,7 +11,6 @@ namespace Bonobo.Git.Server.Data
         public string Password { get; set; }
         public string Email { get; set; }
         public virtual ICollection<Repository> AdministratedRepositories { get; set; }
-        public virtual ICollection<Repository> Repositories { get; set; }
         public virtual ICollection<Role> Roles { get; set; }
         public virtual ICollection<Team> Teams { get; set; }
 
@@ -19,7 +18,6 @@ namespace Bonobo.Git.Server.Data
         public User()
         {
             AdministratedRepositories = new List<Repository>();
-            Repositories = new List<Repository>();
             Roles = new List<Role>();
             Teams = new List<Team>();
         }
