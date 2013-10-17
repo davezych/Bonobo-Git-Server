@@ -124,16 +124,17 @@ namespace Bonobo.Git.Server.Data
         {
             if (item != null)
             {
-                return new RepositoryModel
+                var rm = new RepositoryModel
                         {
                             Name = item.Name,
                             Description = item.Description,
                             AnonymousAccess = item.Anonymous,
-                            // TODO: Load all users
-                            Users = new string[0],
                             Teams = item.Teams.Select(i => i.Name).ToArray(),
                             Administrators = item.Administrators.Select(i => i.Username).ToArray(),
                         };
+                rm.Users = GetUserRepositoriesForRepository(item.Name).Select(u => u.User_Username).ToArray();
+
+                return rm;
             }
 
             return null;
@@ -179,5 +180,13 @@ namespace Bonobo.Git.Server.Data
                 return db.UserRepositoryPermissions.Where(u => u.User_Username == username).ToList();
             }
         }
+
+        public IList<UserRepositoryPermission> GetUserRepositoriesForRepository(string repository)
+        {
+            using (var db = new BonoboGitServerContext())
+            {
+                return db.UserRepositoryPermissions.Where(u => u.Repository_Name == repository).ToList();
+            }
+        } 
     }
 }
