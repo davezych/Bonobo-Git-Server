@@ -83,7 +83,6 @@ namespace Bonobo.Git.Server.Data
                     Anonymous = model.AnonymousAccess,
                 };
                 database.Repositories.Add(repository);
-                AddMembers(model.Users, model.Administrators, model.Teams, repository, database);
                 try
                 {
                     database.SaveChanges();
@@ -93,6 +92,8 @@ namespace Bonobo.Git.Server.Data
                     return false;
                 }
             }
+
+            AddUsersToRepositories(model.Name, model.Users);
 
             return true;
         }
@@ -113,11 +114,13 @@ namespace Bonobo.Git.Server.Data
                     repo.Teams.Clear();
                     repo.Administrators.Clear();
 
-                    AddMembers(model.Users, model.Administrators, model.Teams, repo, db);
+                    AddMembers(model.Administrators, model.Teams, repo, db);
 
                     db.SaveChanges();
                 }
             }
+
+            AddUsersToRepositories(model.Name, model.Users);
         }
 
         private RepositoryModel ConvertToModel(Repository item)
@@ -140,7 +143,7 @@ namespace Bonobo.Git.Server.Data
             return null;
         }
 
-        private void AddMembers(string[] users, string[] admins, string[] teams, Repository repo, BonoboGitServerContext database)
+        private void AddMembers(string[] admins, string[] teams, Repository repo, BonoboGitServerContext database)
         {
             if (admins != null)
             {
@@ -151,18 +154,6 @@ namespace Bonobo.Git.Server.Data
                 }
             }
 
-            if (users != null)
-            {
-                var permittedUsers = database.Users.Where(i => users.Contains(i.Username));
-                foreach (var item in permittedUsers)
-                {
-                    var urp = new UserRepositoryPermission();
-                    urp.User_Username = item.Username;
-                    urp.Repository_Name = repo.Name;
-                    database.UserRepositoryPermissions.Add(urp);
-                }
-            }
-
             if (teams != null)
             {
                 var permittedTeams = database.Teams.Where(i => teams.Contains(i.Name));
@@ -170,6 +161,19 @@ namespace Bonobo.Git.Server.Data
                 {
                     repo.Teams.Add(item);
                 }
+            }
+        }
+
+        public void ClearAllUserRepositoryPermissionsForRepository(string repository)
+        {
+            using (var db = new BonoboGitServerContext())
+            {
+                var users = db.UserRepositoryPermissions.Where(u => u.Repository_Name == repository).ToList();
+                foreach (var userRepositoryPermission in users)
+                {
+                    db.UserRepositoryPermissions.Remove(userRepositoryPermission);
+                }
+                db.SaveChanges();
             }
         }
 
@@ -188,5 +192,21 @@ namespace Bonobo.Git.Server.Data
                 return db.UserRepositoryPermissions.Where(u => u.Repository_Name == repository).ToList();
             }
         } 
+
+        public void AddUsersToRepositories(string repository, string[] users)
+        {
+            ClearAllUserRepositoryPermissionsForRepository(repository);
+            using (var db = new BonoboGitServerContext())
+            {
+                foreach (var user in users)
+                {
+                    var urp = new UserRepositoryPermission();
+                    urp.User_Username = user;
+                    urp.Repository_Name = repository;
+                    db.UserRepositoryPermissions.Add(urp);
+                }
+                db.SaveChanges();
+            }
+        }
     }
 }
