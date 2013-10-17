@@ -155,8 +155,10 @@ namespace Bonobo.Git.Server.Data
                 var permittedUsers = database.Users.Where(i => users.Contains(i.Username));
                 foreach (var item in permittedUsers)
                 {
-                    // TODO: Add users
-                    //repo.Users.Add(item);
+                    var urp = new UserRepositoryPermission();
+                    urp.User_Username = item.Username;
+                    urp.Repository_Name = repo.Name;
+                    database.UserRepositoryPermissions.Add(urp);
                 }
             }
 
@@ -176,6 +178,6 @@ namespace Bonobo.Git.Server.Data
             {
                 return db.UserRepositoryPermissions.Where(u => u.User_Username == username).ToList();
             }
-        } 
+        }
     }
 }
