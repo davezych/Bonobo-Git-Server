@@ -30,7 +30,7 @@ namespace Bonobo.Git.Server.Data
             username = username.ToLowerInvariant();
             return GetAllRepositories().Where(i => i.Administrators.Contains(username)
                 || i.Users.Contains(username)
-                || i.Teams.FirstOrDefault(t => teams.Contains(t)) != null
+                || i.Teams.FirstOrDefault(teams.Contains) != null
                 || i.AnonymousAccess).ToList();
         }
 
@@ -134,6 +134,7 @@ namespace Bonobo.Git.Server.Data
                             AnonymousAccess = item.Anonymous,
                             Teams = item.Teams.Select(i => i.Name).ToArray(),
                             Administrators = item.Administrators.Select(i => i.Username).ToArray(),
+                            Users = GetUserRepositoriesForRepository(item.Name).Select(ur => ur.User_Username).ToArray(),
                         };
                 rm.Users = GetUserRepositoriesForRepository(item.Name).Select(u => u.User_Username).ToArray();
 
