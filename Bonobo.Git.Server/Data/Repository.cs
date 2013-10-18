@@ -9,7 +9,7 @@ namespace Bonobo.Git.Server.Data
         public string Description { get; set; }
         public bool Anonymous { get; set; }
         public virtual ICollection<Team> Teams { get; set; }
-        public virtual ICollection<User> Administrators { get; set; }
+        public virtual ICollection<User> Administrators { get; set; } 
 
         public Repository()
         {
