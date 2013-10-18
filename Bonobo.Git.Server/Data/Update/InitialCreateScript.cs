@@ -60,6 +60,8 @@ namespace Bonobo.Git.Server.Data.Update
                     CREATE TABLE IF NOT EXISTS [UserRepository_Permission] (
                         [User_Username] VarChar(255) Not Null,
                         [Repository_Name] VarChar(255) Not Null,
+                        [EmailOnCommit] bit Not Null,
+                        [EmailOnCommitWithTag] bit Not Null,
                         Constraint [UNQ_UserRepository_Permission_1] Unique ([User_Username], [Repository_Name]),
                         Foreign Key ([User_Username]) References [User]([Username]),
                         Foreign Key ([Repository_Name]) References [Repository]([Name])

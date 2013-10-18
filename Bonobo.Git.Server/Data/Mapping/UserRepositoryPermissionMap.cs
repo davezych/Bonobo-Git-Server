@@ -8,6 +8,8 @@ namespace Bonobo.Git.Server.Data.Mapping
         {
             ToTable("UserRepository_Permission");
             HasKey(u => new { u.Repository_Name, u.User_Username });
+            Property(u => u.EmailOnCommit).HasColumnName("EmailOnCommit");
+            Property(u => u.EmailOnCommitWithTag).HasColumnName("EmailOnCommitWithTag");
         }
     }
 }
