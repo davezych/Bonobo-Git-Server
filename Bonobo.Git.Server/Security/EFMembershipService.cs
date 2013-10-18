@@ -119,11 +119,17 @@ namespace Bonobo.Git.Server.Security
             using (var database = new BonoboGitServerContext())
             {
                 username = username.ToLowerInvariant();
+
                 var user = database.Users.FirstOrDefault(i => i.Username == username);
                 if (user != null)
                 {
+                    var userRepositories = database.UserRepositoryPermissions.Where(u => u.User_Username == username);
+                    foreach (var ur in userRepositories)
+                    {
+                        database.UserRepositoryPermissions.Remove(ur);
+                    }
+
                     user.AdministratedRepositories.Clear();
-                    // TODO: Update to remove repos
                     user.Roles.Clear();
                     user.Teams.Clear();
                     database.Users.Remove(user);
