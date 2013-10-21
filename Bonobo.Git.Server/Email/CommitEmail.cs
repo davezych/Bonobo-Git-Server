@@ -25,14 +25,26 @@ namespace Bonobo.Git.Server.Email
             foreach (var userName in allUsersInRepo)
             {
                 var user = MembershipService.GetUser(userName);
-                //Also check if user wants emails
+
+                var userRepository =
+                    RepositoryRepository.GetUserRepositoriesForUser(userName)
+                                        .First(ur => ur.Repository_Name == repository.Name);
+
+                if (!userRepository.EmailOnCommit)
+                {
+                    continue;
+                }
+
                 if (!string.IsNullOrEmpty(user.Email))
                 {
                     MailMessageBase.To.Add(user.Email);
                 }
             }
 
-            SmtpClient.Send(MailMessageBase);
+            if (MailMessageBase.To.Any())
+            {
+                SmtpClient.Send(MailMessageBase);
+            }
         }
     }
 }
