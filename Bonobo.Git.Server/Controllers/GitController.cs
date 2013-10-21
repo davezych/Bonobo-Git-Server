@@ -79,9 +79,13 @@ namespace Bonobo.Git.Server.Controllers
             {
                 var gitRunner = new GitRunner(GitRunner.GitCommand.Receive, directory.FullName, false);
                 gitRunner.RunGitCmd(GetInputStream(), Response.OutputStream);
-                using (var ce = new CommitEmail(RepositoryRepository, MembershipService))
+
+                if (CommitEmail.CanSendMail)
                 {
-                    ce.SendMailOnCommit(project);
+                    using (var ce = new CommitEmail(RepositoryRepository, MembershipService))
+                    {
+                        ce.SendMailOnCommit(project);
+                    }
                 }
                 return new EmptyResult();
             }

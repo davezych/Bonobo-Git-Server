@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net;
 using System.Net.Mail;
+using Bonobo.Git.Server.Configuration;
 using Bonobo.Git.Server.Data;
 using Bonobo.Git.Server.Security;
 
@@ -12,6 +14,8 @@ namespace Bonobo.Git.Server.Email
         protected SmtpClient SmtpClient;
         protected MailMessage MailMessageBase;
 
+        public static bool CanSendMail { get { return !string.IsNullOrWhiteSpace(UserConfiguration.Current.SmtpHost); } }
+
         private string _fromEmail
         {
             get { return System.Configuration.ConfigurationManager.AppSettings["FromEmail"]; }
@@ -21,9 +25,18 @@ namespace Bonobo.Git.Server.Email
         {
             RepositoryRepository = repositoryRepository;
             MembershipService = membershipService;
-            SmtpClient = new SmtpClient();
-            MailMessageBase = new MailMessage();
-            MailMessageBase.From = new MailAddress(_fromEmail);
+
+            SmtpClient = new SmtpClient(UserConfiguration.Current.SmtpHost, UserConfiguration.Current.SmtpPort)
+                {
+                    Credentials =
+                        new NetworkCredential(UserConfiguration.Current.SmtpUsername,
+                                              UserConfiguration.Current.SmtpPassword)
+                };
+
+            MailMessageBase = new MailMessage
+                {
+                    From = new MailAddress(_fromEmail)
+                };
         }
 
         protected void Send()
